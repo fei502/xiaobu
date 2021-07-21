@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Scroll - Test</title>
+    <style>
+        h1.text{
+            text-align: center;
+        }
+        ul.container {
+            position: relative;
+            width: 350px;
+            max-height: 500px;
+            margin: auto;
+            padding: 0;
+            border: 1px solid #000;
+            overflow-y: auto;
+            list-style-type: none;
+        }
+
+        ul.container li {
+            position: absolute;
+            width: 100%;
+            height: 50px;
+            color: white;
+            text-align: center;
+            line-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="text">2022校招 - 虚拟滚动</h1>
+    <ul class="container"></ul>
+    <script>
+        const dataList = Array.from({ length: 1000 }).map((item, index) => index); // 生成一千条数据
+        const $list = document.querySelector(".container")
+        const size = 20 // 可视区域10条，但是需要滚动 每次的条数就取20
+        createItem(0) // 默认从0开始（i）
+        $list.setAttribute("style", `height: ${50 * dataList.length}px;`); // 设置容器高度
+        function handleScroll(e) { // 计算应该展示那些
+            const i = Math.floor(e.target.scrollTop / 50);
+            createItem(i);
+        }
+
+        function createItem(i) {
+            $list.innerHTML = dataList.slice(i, i + size).map(
+                item =>
+                    `<li style="top: ${item * 50}px; background: ${createHexColor()};">${item}</li>`)
+                .join("");
+        }
+        $list.onscroll = throttle(handleScroll, 20);
+        function throttle(fn, delay) { // 滚动触发的事件
+            let lastTime = 0;
+            return function () {
+                const nowTime = +new Date();
+                if (nowTime - lastTime > delay) {
+                    fn.apply(this, arguments);
+                    lastTime = nowTime;
+                }
+            }
+        }
+        function createHexColor() {
+            const colorStr = "6789abcdef",
+                len = colorStr.length;
+            let colorVal = "#";
+            for (let i = 0; i < 6; i++) {
+                colorVal += colorStr[Math.floor(Math.random() * len)];
+            }
+            return colorVal
+        }
+    </script>
+</body>
+
+</html>
